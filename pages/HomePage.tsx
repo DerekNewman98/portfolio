@@ -1,114 +1,189 @@
-import React, { useEffect } from 'react';
-import { useLocation } from 'react-router-dom';
-import { scroller } from 'react-scroll';
-import ParticleBackground from '../components/ParticleBackground';
-import AnimatedSection from '../components/AnimatedSection';
-import BrainCanvas from '../components/BrainCanvas';
-
-const HeroSection: React.FC = () => (
-  <section className="relative h-screen flex items-center justify-center text-center">
-    <ParticleBackground />
-    <div className="relative z-10 max-w-4xl mx-auto px-4 flex flex-col items-center">
-      <div className="w-64 h-64 md:w-72 md:h-72 mb-8">
-        <BrainCanvas />
-      </div>
-      <div>
-        <p className="text-lg text-accent mb-4 font-mono">Hi, my name is</p>
-        <h1 className="text-5xl md:text-7xl font-bold text-text-primary mb-4">Derek Newman.</h1>
-        <h2 className="text-3xl sm:text-4xl md:text-6xl font-bold text-text-secondary mb-8 whitespace-nowrap">I study brains and build models.</h2>
-        <p className="text-lg text-text-secondary max-w-3xl mx-auto">
-          I'm a PhD candidate in Neuroscience at McGill University, where my work bridges neuroimaging, complexity science, and machine learning to investigate how the brain’s dynamics support consciousness.
-        </p>
-      </div>
-    </div>
-  </section>
-);
-
-const AboutSection: React.FC = () => (
-  <AnimatedSection id="about" className="py-24">
-    <div className="container mx-auto px-6 max-w-5xl">
-      <h2 className="text-3xl font-bold text-text-primary mb-12 flex items-center">
-        <span className="text-accent font-mono mr-3 text-2xl"></span> About Me
-        <span className="flex-grow h-px bg-background-secondary ml-4"></span>
-      </h2>
-      <div className="grid md:grid-cols-5 gap-12 items-start">
-        <div className="md:col-span-3 text-text-secondary space-y-4 text-lg leading-relaxed">
-          <p>
-            I'm a PhD candidate in the Integrated Program in Neuroscience at McGill University, based at the Montreal General Hospital. I study how brain activity evolves across states of consciousness, focusing on anesthesia and severe brain injury.
-          </p>
-          <p>
-            My research integrates neuroimaging (EEG, MEG, and fMRI) with complexity science and machine learning. By applying entropy, fractal, and dynamical systems metrics, I investigate how the brain maintains a balance between order and chaos, and how this balance reorganizes when consciousness is disrupted.
-          </p>
-          <p>
-            With a background in Behavioural Neuroscience from Concordia University, my long-term goal is to translate theoretical insights into clinical tools that improve diagnosis, prognosis, and treatment for patients with disorders of consciousness.
-          </p>
-          <a href="#" download className="inline-block mt-6 px-6 py-3 border border-accent text-accent rounded-md hover:bg-accent/10 transition-colors duration-300 font-mono">
-            Download CV
-          </a>
-        </div>
-        <div className="md:col-span-2 relative group w-full max-w-sm mx-auto">
-            <div className="absolute -inset-1.5 bg-gradient-to-r from-sky-500 to-sky-700 rounded-lg blur opacity-75 group-hover:opacity-100 transition duration-1000 group-hover:duration-200 animate-tilt"></div>
-            <img 
-                src="https://picsum.photos/seed/derek-professional/500/500" 
-                alt="Derek Newman" 
-                className="rounded-lg w-full relative"
-            />
-        </div>
-      </div>
-    </div>
-  </AnimatedSection>
-);
-
-const ContactSection: React.FC = () => (
-  <AnimatedSection id="contact" className="py-24 text-center">
-    <div className="container mx-auto px-6 max-w-2xl">
-      <h2 className="text-3xl font-bold text-text-primary mb-4">
-        <span className="text-accent font-mono mr-3 text-2xl"></span> Get In Touch
-      </h2>
-      <p className="text-text-secondary mb-8">
-        I'm always open to discussing new research ideas, collaborations, or opportunities. Feel free to reach out!
-      </p>
-      
-      <div className="mb-10">
-        <a href="mailto:derek.newman@mail.mcgill.ca" className="text-lg font-mono text-accent p-4 border border-accent/50 rounded-md inline-block hover:bg-accent/10 transition-colors duration-300">
-            derek.newman@mail.mcgill.ca
-        </a>
-      </div>
-
-      <form className="space-y-4">
-        <input type="text" placeholder="Your Name" className="w-full bg-background-secondary p-3 rounded-md border border-gray-700 focus:outline-none focus:ring-2 focus:ring-accent text-text-primary" />
-        <input type="email" placeholder="Your Email" className="w-full bg-background-secondary p-3 rounded-md border border-gray-700 focus:outline-none focus:ring-2 focus:ring-accent text-text-primary" />
-        <textarea placeholder="Your Message" rows={5} className="w-full bg-background-secondary p-3 rounded-md border border-gray-700 focus:outline-none focus:ring-2 focus:ring-accent text-text-primary"></textarea>
-        <button type="submit" className="px-8 py-3 border border-accent text-accent rounded-md hover:bg-accent/10 transition-colors duration-300 font-mono">
-          Send Message
-        </button>
-      </form>
-    </div>
-  </AnimatedSection>
-);
+import React, { useEffect } from "react";
+import { useLocation } from "react-router-dom";
+import { scroller } from "react-scroll";
+import AnimatedSection from "../components/AnimatedSection";
+import BrainCanvas from "../components/BrainCanvas";
+import {
+  aboutIntro,
+  contactLinks,
+  heroStatement,
+  publications,
+  researchTopics,
+} from "../data/portfolioData";
 
 const HomePage: React.FC = () => {
-    const location = useLocation();
+  const location = useLocation();
 
-    useEffect(() => {
-        if (location.hash) {
-            const id = location.hash.substring(1);
-            setTimeout(() => {
-                scroller.scrollTo(id, {
-                    duration: 800,
-                    delay: 0,
-                    smooth: 'easeInOutQuart',
-                    offset: -80, // Adjust for sticky header height
-                });
-            }, 100);
-        }
-    }, [location.hash]);
+  useEffect(() => {
+    if (!location.hash) return;
+
+    const id = location.hash.replace("#", "");
+    window.setTimeout(() => {
+      scroller.scrollTo(id, {
+        duration: 700,
+        delay: 0,
+        smooth: "easeInOutQuart",
+        offset: -84,
+      });
+    }, 120);
+  }, [location.hash]);
 
   return (
     <>
-      <HeroSection />
-      <AboutSection />
-      <ContactSection />
+      <section className="hero-section">
+        <div className="hero-grid hero-grid--centered">
+          <div className="hero-copy hero-copy--centered">
+            <p className="eyebrow hero-fade hero-fade--1">{heroStatement.eyebrow}</p>
+            <h1 className="hero-title hero-fade hero-fade--2">{heroStatement.title}</h1>
+            <div className="hero-visual hero-visual--centered">
+              <BrainCanvas />
+            </div>
+            <p className="hero-subtitle hero-subtitle--centered hero-fade hero-fade--3">
+              {heroStatement.subtitle}
+            </p>
+            <p className="hero-description hero-description--centered hero-fade hero-fade--4">
+              {heroStatement.description}
+            </p>
+            <div className="hero-actions hero-actions--centered hero-fade hero-fade--5">
+              <a className="button button--primary" href="#/research">
+                Explore research
+              </a>
+              <a className="button button--ghost" href="#about">
+                View overview
+              </a>
+            </div>
+            <div className="metric-row metric-row--centered hero-fade hero-fade--6">
+              {heroStatement.metrics.map((metric) => (
+                <div key={metric.label} className="metric-card">
+                  <div className="metric-card__label">{metric.label}</div>
+                  <div className="metric-card__value">{metric.value}</div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <AnimatedSection id="about" className="section-shell">
+        <div className="section-card">
+          <div className="section-intro">
+            <p className="eyebrow">{aboutIntro.eyebrow}</p>
+            <h2 className="section-title">{aboutIntro.title}</h2>
+            <p className="section-description">{aboutIntro.description}</p>
+          </div>
+          <div className="two-column">
+            <div className="panel-card">
+              <div className="section-kicker">Research direction</div>
+              <p className="item-description">
+                I work at the intersection of neuroimaging, complexity science,
+                consciousness research, and machine learning. The goal is not
+                just statistical prediction, but building interpretable models of
+                how brain dynamics shift across sedation, severe injury, and
+                recovery.
+              </p>
+              <div className="tag-row">
+                <span className="tag">EEG and fMRI</span>
+                <span className="tag">Clinical translation</span>
+                <span className="tag">NeuroAI</span>
+              </div>
+            </div>
+            <div className="panel-card">
+              <div className="section-kicker">What this site is for</div>
+              <p className="item-description">
+                This is not only a CV wrapper. It is the long-term shell for
+                publications, scientific demos, theory explanation pages,
+                interactive visualizations, and custom research communication
+                modules.
+              </p>
+              <div className="tag-row">
+                <span className="tag">Research showcase</span>
+                <span className="tag">Visual explainers</span>
+                <span className="tag">Future interactive tools</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </AnimatedSection>
+
+      <AnimatedSection className="section-shell">
+        <div className="section-card">
+          <div className="section-intro">
+            <p className="eyebrow">Focus Areas</p>
+            <h2 className="section-title">Current lines of work</h2>
+          </div>
+          <div className="card-grid card-grid--2">
+            {researchTopics.map((topic) => (
+              <article key={topic.title} className="glass-card glass-card--hover">
+                <p className="section-kicker">{topic.tags?.join(" • ")}</p>
+                <h3 className="item-title">{topic.title}</h3>
+                <p className="item-description">{topic.description}</p>
+                {topic.details && (
+                  <ul className="item-detail-list">
+                    {topic.details.map((detail) => (
+                      <li key={detail}>{detail}</li>
+                    ))}
+                  </ul>
+                )}
+              </article>
+            ))}
+          </div>
+        </div>
+      </AnimatedSection>
+
+      <AnimatedSection className="section-shell">
+        <div className="section-card">
+          <div className="section-intro">
+            <p className="eyebrow">Selected Work</p>
+            <h2 className="section-title">Recent publication highlights</h2>
+          </div>
+          <div className="card-grid">
+            {publications.map((publication) => (
+              <article key={publication.title} className="glass-card glass-card--hover">
+                <p className="item-meta">
+                  {publication.journal} • {publication.year}
+                </p>
+                <h3 className="item-title">{publication.title}</h3>
+                <p className="item-description">{publication.authors}</p>
+                {publication.summary && (
+                  <p className="item-description">{publication.summary}</p>
+                )}
+              </article>
+            ))}
+          </div>
+        </div>
+      </AnimatedSection>
+
+      <AnimatedSection id="contact" className="section-shell">
+        <div className="section-card">
+          <div className="section-intro">
+            <p className="eyebrow">Contact</p>
+            <h2 className="section-title">Open to research, collaboration, and visual systems work.</h2>
+            <p className="section-description">
+              If you want to discuss consciousness science, EEG criticality,
+              scientific visualization, or future interactive demos, get in
+              touch.
+            </p>
+          </div>
+          <div className="contact-grid">
+            <div className="contact-list">
+              {contactLinks.map((item) => (
+                <a key={item.label} className="contact-item" href={item.href}>
+                  <div className="contact-item__label">{item.label}</div>
+                  <div className="contact-item__value">{item.value}</div>
+                </a>
+              ))}
+            </div>
+            <form className="contact-form">
+              <input className="input" type="text" placeholder="Your name" />
+              <input className="input" type="email" placeholder="Your email" />
+              <textarea className="textarea" rows={6} placeholder="What do you want to build or discuss?" />
+              <button type="submit" className="button button--primary">
+                Send inquiry
+              </button>
+            </form>
+          </div>
+        </div>
+      </AnimatedSection>
     </>
   );
 };

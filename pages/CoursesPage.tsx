@@ -1,36 +1,42 @@
-import React from 'react';
-import AnimatedSection from '../components/AnimatedSection';
-import { courses } from '../data/portfolioData';
-import { Course } from '../types';
+import React from "react";
+import AnimatedSection from "../components/AnimatedSection";
+import { courses } from "../data/portfolioData";
+import { Course } from "../types";
 
 const CourseCard: React.FC<{ course: Course }> = ({ course }) => (
-    <div className="bg-background-secondary rounded-lg border border-transparent hover:border-accent/50 overflow-hidden transform hover:-translate-y-2 transition-all duration-300 shadow-lg">
-        <img src={course.imageUrl} alt={course.title} className="w-full h-48 object-cover" />
-        <div className="p-6">
-            <h3 className="text-xl font-bold text-text-primary mb-2">{course.title}</h3>
-            <p className="font-mono text-accent mb-3">{course.id}</p>
-            <p className="text-text-secondary">{course.description}</p>
-        </div>
-    </div>
+  <article className="glass-card glass-card--hover">
+    <p className="section-kicker">{course.id}</p>
+    <h3 className="item-title">{course.title}</h3>
+    <p className="course-meta">{course.format}</p>
+    <p className="item-description">{course.description}</p>
+    <ul className="item-detail-list">
+      {course.focus.map((item) => (
+        <li key={item}>{item}</li>
+      ))}
+    </ul>
+  </article>
 );
 
-const CoursesPage: React.FC = () => {
-  return (
-    <div className="pt-24 min-h-screen bg-background">
-      <AnimatedSection className="py-16">
-        <div className="container mx-auto px-6">
-          <h1 className="text-4xl md:text-5xl font-bold text-text-primary mb-2">Courses</h1>
-          <p className="text-lg text-text-secondary mb-12">A selection of courses I have taught or created.</p>
-          
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {courses.map(course => (
-              <CourseCard key={course.id} course={course} />
-            ))}
-          </div>
-        </div>
-      </AnimatedSection>
+const CoursesPage: React.FC = () => (
+  <AnimatedSection className="section-shell">
+    <div className="section-card">
+      <div className="section-intro">
+        <p className="eyebrow">Courses</p>
+        <h1 className="section-title">Teaching and educational design around brain dynamics, computation, and scientific reasoning.</h1>
+        <p className="section-description">
+          The page keeps your course-grid architecture, but shifts the visual
+          treatment toward premium academic cards rather than generic thumbnail
+          tiles.
+        </p>
+      </div>
+
+      <div className="card-grid card-grid--3">
+        {courses.map((course) => (
+          <CourseCard key={course.id} course={course} />
+        ))}
+      </div>
     </div>
-  );
-};
+  </AnimatedSection>
+);
 
 export default CoursesPage;

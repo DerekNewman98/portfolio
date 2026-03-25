@@ -1,156 +1,129 @@
-import React, { useRef, useEffect } from 'react';
+import React, { useEffect, useRef } from "react";
 
 interface Particle {
   x: number;
   y: number;
   vx: number;
   vy: number;
-  radius: number;
-  anchorX: number;
-  anchorY: number;
-  anchorVx: number;
-  anchorVy: number;
+  depth: number;
+  drift: number;
 }
 
 const ParticleBackground: React.FC = () => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
-  const mouse = useRef<{ x: number | null, y: number | null }>({ x: null, y: null });
+  const mouseRef = useRef<{ x: number; y: number } | null>(null);
 
   useEffect(() => {
     const canvas = canvasRef.current;
     if (!canvas) return;
-    const ctx = canvas.getContext('2d');
+    const ctx = canvas.getContext("2d");
     if (!ctx) return;
 
     let particles: Particle[] = [];
-    let animationFrameId: number;
+    let raf = 0;
 
-    const resizeCanvas = () => {
-        canvas.width = window.innerWidth;
-        canvas.height = window.innerHeight;
-        initParticles();
+    const makeParticles = () => {
+      const count = Math.max(80, Math.floor((window.innerWidth * window.innerHeight) / 21000));
+      particles = Array.from({ length: count }, () => ({
+        x: Math.random() * canvas.width,
+        y: Math.random() * canvas.height,
+        vx: (Math.random() - 0.5) * 0.24,
+        vy: (Math.random() - 0.5) * 0.24,
+        depth: Math.random(),
+        drift: Math.random() * Math.PI * 2,
+      }));
     };
 
-    const handleMouseMove = (event: MouseEvent) => {
-        mouse.current.x = event.clientX;
-        mouse.current.y = event.clientY;
+    const resize = () => {
+      const ratio = window.devicePixelRatio || 1;
+      canvas.width = Math.floor(window.innerWidth * ratio);
+      canvas.height = Math.floor(window.innerHeight * ratio);
+      canvas.style.width = `${window.innerWidth}px`;
+      canvas.style.height = `${window.innerHeight}px`;
+      ctx.setTransform(ratio, 0, 0, ratio, 0, 0);
+      makeParticles();
     };
 
-    const handleMouseOut = () => {
-        mouse.current.x = null;
-        mouse.current.y = null;
-    }
+    const render = () => {
+      ctx.clearRect(0, 0, window.innerWidth, window.innerHeight);
 
-    const initParticles = () => {
-        particles = [];
-        const numParticles = Math.floor(canvas.width * canvas.height / 2500);
-        for (let i = 0; i < numParticles; i++) {
-            const x = Math.random() * canvas.width;
-            const y = Math.random() * canvas.height;
-            particles.push({
-                x: x,
-                y: y,
-                vx: 0,
-                vy: 0,
-                radius: Math.random() * 1.5 + 0.5,
-                anchorX: x,
-                anchorY: y,
-                anchorVx: Math.random() * 0.8 - 0.4,
-                anchorVy: Math.random() * 0.8 - 0.4,
-            });
-        }
-    };
+      const gradient = ctx.createLinearGradient(0, 0, window.innerWidth, window.innerHeight);
+      gradient.addColorStop(0, "rgba(255, 255, 255, 0.018)");
+      gradient.addColorStop(0.5, "rgba(255, 255, 255, 0.008)");
+      gradient.addColorStop(1, "rgba(255, 255, 255, 0.022)");
+      ctx.fillStyle = gradient;
+      ctx.fillRect(0, 0, window.innerWidth, window.innerHeight);
 
-    const animate = () => {
-      ctx.clearRect(0, 0, canvas.width, canvas.height);
-      const accentColor = '56, 189, 248'; // sky-400
-      const MOUSE_RADIUS = 150;
-      const SPRING_STRENGTH = 0.01;
-      const DAMPING = 0.95;
-      const MOUSE_PULL_STRENGTH = 0.4;
+      particles.forEach((particle) => {
+        particle.drift += 0.01 * (0.4 + particle.depth);
+        particle.x += particle.vx * (0.6 + particle.depth);
+        particle.y += particle.vy * (0.6 + particle.depth) + Math.sin(particle.drift) * 0.08;
 
-      particles.forEach(p => {
-        // Move anchor point
-        p.anchorX += p.anchorVx;
-        p.anchorY += p.anchorVy;
-
-        // Anchor bounces off walls
-        if (p.anchorX - p.radius < 0 || p.anchorX + p.radius > canvas.width) {
-            p.anchorVx *= -1;
-        }
-        if (p.anchorY - p.radius < 0 || p.anchorY + p.radius > canvas.height) {
-            p.anchorVy *= -1;
+        if (mouseRef.current) {
+          const dx = mouseRef.current.x - particle.x;
+          const dy = mouseRef.current.y - particle.y;
+          const dist = Math.hypot(dx, dy);
+          if (dist < 140 && dist > 0) {
+            particle.x -= (dx / dist) * 0.5;
+            particle.y -= (dy / dist) * 0.5;
+          }
         }
 
-        // Spring force pulling particle towards its anchor
-        const dxSpring = p.anchorX - p.x;
-        const dySpring = p.anchorY - p.y;
-        p.vx += dxSpring * SPRING_STRENGTH;
-        p.vy += dySpring * SPRING_STRENGTH;
+        if (particle.x < -40) particle.x = window.innerWidth + 40;
+        if (particle.x > window.innerWidth + 40) particle.x = -40;
+        if (particle.y < -40) particle.y = window.innerHeight + 40;
+        if (particle.y > window.innerHeight + 40) particle.y = -40;
 
-        // Mouse interaction force
-        if (mouse.current.x !== null && mouse.current.y !== null) {
-            const dxMouse = mouse.current.x - p.x;
-            const dyMouse = mouse.current.y - p.y;
-            const dist = Math.hypot(dxMouse, dyMouse);
-
-            if (dist < MOUSE_RADIUS) {
-                const force = (MOUSE_RADIUS - dist) / MOUSE_RADIUS;
-                // This force should be strong enough to pull the particle away from its anchor
-                p.vx += (dxMouse / dist) * force * MOUSE_PULL_STRENGTH;
-                p.vy += (dyMouse / dist) * force * MOUSE_PULL_STRENGTH;
-            }
-        }
-
-        // Apply damping to simulate friction
-        p.vx *= DAMPING;
-        p.vy *= DAMPING;
-        
-        // Update particle's actual position
-        p.x += p.vx;
-        p.y += p.vy;
-
-        // Draw the particle
+        const radius = 1.15 + particle.depth * 1.75;
         ctx.beginPath();
-        ctx.arc(p.x, p.y, p.radius, 0, Math.PI * 2);
-        ctx.fillStyle = `rgba(${accentColor}, 0.9)`;
+        ctx.arc(particle.x, particle.y, radius, 0, Math.PI * 2);
+        ctx.fillStyle = `rgba(255, 255, 255, ${0.28 + particle.depth * 0.24})`;
         ctx.fill();
       });
 
-      // Draw connections between nearby particles
-      for (let i = 0; i < particles.length; i++) {
-        for (let j = i + 1; j < particles.length; j++) {
-          const dist = Math.hypot(particles[i].x - particles[j].x, particles[i].y - particles[j].y);
-          if (dist < 120) {
+      for (let i = 0; i < particles.length; i += 1) {
+        const p1 = particles[i];
+        for (let j = i + 1; j < particles.length; j += 1) {
+          const p2 = particles[j];
+          const dist = Math.hypot(p1.x - p2.x, p1.y - p2.y);
+          if (dist < 152) {
             ctx.beginPath();
-            ctx.moveTo(particles[i].x, particles[i].y);
-            ctx.lineTo(particles[j].x, particles[j].y);
-            ctx.strokeStyle = `rgba(${accentColor}, ${0.8 - dist / 120})`;
-            ctx.lineWidth = 0.5;
+            ctx.moveTo(p1.x, p1.y);
+            ctx.lineTo(p2.x, p2.y);
+            ctx.strokeStyle = `rgba(255, 255, 255, ${0.14 - dist / 2550})`;
+            ctx.lineWidth = p1.depth > 0.7 || p2.depth > 0.7 ? 1.08 : 0.72;
             ctx.stroke();
           }
         }
       }
 
-      animationFrameId = requestAnimationFrame(animate);
+      raf = window.requestAnimationFrame(render);
     };
-    
-    resizeCanvas();
-    animate();
 
-    window.addEventListener('resize', resizeCanvas);
-    window.addEventListener('mousemove', handleMouseMove);
-    window.addEventListener('mouseout', handleMouseOut);
+    const handlePointer = (event: MouseEvent) => {
+      mouseRef.current = { x: event.clientX, y: event.clientY };
+    };
+
+    const clearPointer = () => {
+      mouseRef.current = null;
+    };
+
+    resize();
+    render();
+
+    window.addEventListener("resize", resize);
+    window.addEventListener("mousemove", handlePointer);
+    window.addEventListener("mouseleave", clearPointer);
 
     return () => {
-      window.removeEventListener('resize', resizeCanvas);
-      window.removeEventListener('mousemove', handleMouseMove);
-      window.removeEventListener('mouseout', handleMouseOut);
-      cancelAnimationFrame(animationFrameId);
+      window.removeEventListener("resize", resize);
+      window.removeEventListener("mousemove", handlePointer);
+      window.removeEventListener("mouseleave", clearPointer);
+      window.cancelAnimationFrame(raf);
     };
   }, []);
 
-  return <canvas ref={canvasRef} className="absolute top-0 left-0 w-full h-full z-0" />;
+  return <canvas ref={canvasRef} className="ambient-layer ambient-canvas" aria-hidden="true" />;
 };
 
 export default ParticleBackground;

@@ -1,7 +1,32 @@
+export interface NavItem {
+  label: string;
+  path: string;
+  type: "route" | "scroll";
+}
+
+export interface HeroMetric {
+  label: string;
+  value: string;
+}
+
+export interface HeroStatement {
+  eyebrow: string;
+  title: string;
+  subtitle: string;
+  description: string;
+  metrics: HeroMetric[];
+}
+
 export interface ResearchTopic {
   title: string;
   description: string;
   details?: string[];
+  tags?: string[];
+}
+
+export interface PublicationLink {
+  name: string;
+  url: string;
 }
 
 export interface Publication {
@@ -9,22 +34,25 @@ export interface Publication {
   authors: string;
   journal: string;
   year: number;
-  links: { name: string; url: string }[];
+  summary?: string;
+  links: PublicationLink[];
 }
 
 export interface Course {
-  title:string;
+  title: string;
   id: string;
   description: string;
-  imageUrl: string;
+  format: string;
+  focus: string[];
 }
 
 export interface Demo {
-    title: string;
-    description: string;
-    latexEquation?: string;
-    codeSnippet?: string;
-    language?: string;
+  title: string;
+  description: string;
+  tags: string[];
+  latexEquation?: string;
+  codeSnippet?: string;
+  language?: string;
 }
 
 export interface AcademicItem {
@@ -40,11 +68,23 @@ export interface Presentation {
   event: string;
   year: number;
   location: string;
-  link?: { name: string; url: string };
+  link?: PublicationLink;
 }
 
 export interface Award {
   year: string;
   name: string;
   awardedBy: string;
+}
+
+export interface ContactLink {
+  label: string;
+  value: string;
+  href: string;
+}
+
+export interface SiteSectionIntro {
+  eyebrow: string;
+  title: string;
+  description: string;
 }

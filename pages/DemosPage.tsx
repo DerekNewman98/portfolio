@@ -1,39 +1,45 @@
-import React from 'react';
-import AnimatedSection from '../components/AnimatedSection';
-import { demos } from '../data/portfolioData';
-import { Demo } from '../types';
-import KaTeXRenderer from '../components/KaTeXRenderer';
+import React from "react";
+import AnimatedSection from "../components/AnimatedSection";
+import KaTeXRenderer from "../components/KaTeXRenderer";
+import { demos } from "../data/portfolioData";
+import { Demo } from "../types";
 
 const DemoCard: React.FC<{ demo: Demo }> = ({ demo }) => (
-    <div className="bg-background-secondary rounded-lg border border-transparent hover:border-accent/50 p-6 md:p-8 transition-colors duration-300 shadow-lg">
-        <h3 className="text-2xl font-bold text-accent-hover mb-3">{demo.title}</h3>
-        <p className="text-text-secondary mb-4">{demo.description}</p>
-        {demo.latexEquation && <KaTeXRenderer latex={demo.latexEquation} />}
-        {demo.codeSnippet && (
-            <div className="bg-gray-900 p-4 rounded-md mt-4 font-mono text-sm text-gray-200 overflow-x-auto border border-gray-700">
-                <pre><code>{demo.codeSnippet.trim()}</code></pre>
-            </div>
-        )}
-    </div>
+  <article className="glass-card glass-card--hover">
+    <p className="section-kicker">{demo.tags.join(" • ")}</p>
+    <h3 className="item-title">{demo.title}</h3>
+    <p className="item-description">{demo.description}</p>
+    {demo.latexEquation && <KaTeXRenderer latex={demo.latexEquation} />}
+    {demo.codeSnippet && (
+      <div className="code-block">
+        <pre>
+          <code>{demo.codeSnippet.trim()}</code>
+        </pre>
+      </div>
+    )}
+  </article>
 );
 
-const DemosPage: React.FC = () => {
-    return (
-      <div className="pt-24 min-h-screen bg-background">
-        <AnimatedSection className="py-16">
-          <div className="container mx-auto px-6">
-            <h1 className="text-4xl md:text-5xl font-bold text-text-primary mb-2">Demos</h1>
-            <p className="text-lg text-text-secondary mb-12">Showcase of technical concepts and implementations.</p>
-            
-            <div className="space-y-12 max-w-4xl mx-auto">
-              {demos.map((demo, index) => (
-                <DemoCard key={index} demo={demo} />
-              ))}
-            </div>
-          </div>
-        </AnimatedSection>
+const DemosPage: React.FC = () => (
+  <AnimatedSection className="section-shell">
+    <div className="section-card">
+      <div className="section-intro">
+        <p className="eyebrow">Demos</p>
+        <h1 className="section-title">A place for technical explainers, computational experiments, and theory-driven visual modules.</h1>
+        <p className="section-description">
+          This page stays lightweight and page-based, but the layout is now
+          ready for future interactive demos, embedded canvases, and conceptual
+          explainers instead of only static text cards.
+        </p>
       </div>
-    );
-  };
-  
-  export default DemosPage;
+
+      <div className="list-stack">
+        {demos.map((demo) => (
+          <DemoCard key={demo.title} demo={demo} />
+        ))}
+      </div>
+    </div>
+  </AnimatedSection>
+);
+
+export default DemosPage;
